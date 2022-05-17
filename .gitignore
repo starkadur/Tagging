@@ -1,0 +1,4 @@
+.python-version
+is_icepahc.model
+tenfold/
+*__pycache__/
