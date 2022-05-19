@@ -438,9 +438,6 @@ if not args.configfile:
 #hægt að senda inn 1 sem fyrstu stiku og þá er ítrað yfir möppur í öfugri röð. Má nota ef það á að keyra skriftuna
 #tvisvar sinnum til að flýta fyrir
 
-
-path2taggermodel = "/home/starkadur/PycharmProjects/morkun_lemmun/tagger-v2.0.0.pt"
-
 resp_stmt = [
     {
         'name':"Starkaður Barkarson",
@@ -481,10 +478,10 @@ tagger: pos.Tagger = torch.hub.load(
 logging.getLogger("pos").setLevel(logging.ERROR)
 
 # read rules and tagset for Nefnir
-with open("/home/starkadur/PycharmProjects/morkun_lemmun/nefnir/gull_rules.json", encoding='utf-8') as f:
+with open("../nefnir/gull_rules.json", encoding='utf-8') as f:
     rules = json.load(f)
 
-with open("/home/starkadur/PycharmProjects/morkun_lemmun/nefnir/gull_tagset.json", encoding='utf-8') as f:
+with open("../nefnir/gull_tagset.json", encoding='utf-8') as f:
     tagset = json.load(f)
 
 #Initialize Nefnir
