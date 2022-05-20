@@ -411,7 +411,7 @@ tmp = teiCorpus.rsplit("/",1)[1].replace(".xml",".txt")
 errorlogfile = "errors_{}".format(tmp)
 
 
-if args.input.find("ParlaMint")>-1 or args.input.find("althingi")>-1:
+if args.input.find("ParlaMint")>-1 or args.input.find("Parla")>-1:
     seg_name = "seg"
 else:
     seg_name = "p"
