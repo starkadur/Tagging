@@ -445,11 +445,10 @@ path2tei_ana = args.output
 
 parser = etree.XMLParser(remove_blank_text=True)
 
-#files = get_files()
+files = get_files()
 
-#files = sorted(files, reverse=(args.reverse==1))
+files = sorted(files, reverse=(args.reverse==1))
 
-files = ['/media/starkadur/NewVolume/Parlatmp/Parlatmp.xml']
 with open(args.configfile) as f:
     config = json.load(f)
 
