@@ -374,7 +374,6 @@ def get_files():
     root_ = tree_.getroot()
     for include in root_.findall("{http://www.w3.org/2001/XInclude}include"):
 
-        #if (include.attrib['href'].find("_2016_")>0 and include.attrib['href'].find('2016_03')==-1) or include.attrib['href'].find("_2017_")>0 or include.attrib['href'].find("_2018_")>0 or include.attrib['href'].find("_2019_")>0 or include.attrib['href'].find("_2020_")>0:
         data.append(join(args.input,include.attrib['href']))
 
     return data
@@ -416,6 +415,7 @@ if args.input.find("ParlaMint")>-1 or args.input.find("Parla")>-1:
 else:
     seg_name = "p"
 
+print(seg_name)
 if not args.input.endswith("/"):
     args.input = "{}/".format(args.input)
 if not args.output.endswith("/"):
@@ -445,10 +445,11 @@ path2tei_ana = args.output
 
 parser = etree.XMLParser(remove_blank_text=True)
 
-files = get_files()
+#files = get_files()
 
-files = sorted(files, reverse=(args.reverse==1))
+#files = sorted(files, reverse=(args.reverse==1))
 
+files = ['/media/starkadur/NewVolume/Parlatmp/Parlatmp.xml']
 with open(args.configfile) as f:
     config = json.load(f)
 
@@ -494,17 +495,11 @@ for path2file in files:
     if cnt%1000==0:
         print(cnt)
     fatal_error = False
-    #búa til möppu ef þarf
-    '''if args.level==1:
-        splt = file.split("/")
-        if len(splt)==2:
-            folder = splt[0]
-            if not os.path.exists(join(path2tei_ana, folder)):
-                os.makedirs(join(path2tei_ana, folder))'''
 
     file = path2file.rsplit("/",1)[1]
 
     filename_ana = path2file.replace(args.input, args.output)
+
     if filename_ana == path2file:
         print("slóð á .ana er sama og á TEI")
         print(path2file)
@@ -520,8 +515,8 @@ for path2file in files:
         os.makedirs(splt[0])
 
 
-    if os.path.exists(filename_ana):
-        continue
+    #if os.path.exists(filename_ana):
+    #    continue
 
     #if filename_ana != '/media/starkadur/NewVolume/risamalheild2020/samfelagsmidlar/TEI/IGC-Social-21.10.ana/Twitter/2008/IGC-Social3_2008_04.ana.xml':
     #    continue
@@ -576,6 +571,7 @@ for path2file in files:
 
     print("fjöldi seg: {}".format(cnt_seg))
     for seg in segs:
+
         #cnt_seg-=1
         #print(cnt_seg)
         #if fatal_error:
@@ -632,7 +628,6 @@ for path2file in files:
             for i in range(0, len(texts)):
                 texts[i] = clean_text(texts[i])
 
-
         #finna index þar sem mörk texta eru (og því pláss fyrir elems)
         tags_insert_indices = calculate_indices(texts)
 
@@ -641,7 +636,6 @@ for path2file in files:
         #TODO: gera þetta áður en fyrstu tei-skjöl eru búin til
 
         text_tokenized = tokenize(text)
-
 
         seg.text = None
 
@@ -699,6 +693,7 @@ for path2file in files:
             item_nr = 1
             #ítra yfir hvert tóka setningar
             for item in sent:
+                print(item)
 
                 right_join=True
                 token_len = len(item[0])
@@ -729,6 +724,7 @@ for path2file in files:
 
                 #bæta við elem (vocal, incident ...) ef staðsetning er rétt
                 if len(elems)>0 and elem_index < len(tags_insert_indices):
+
 
                     #komið að skilum texta sem þýðir að tag (vocal,...) ætti að koma inn.
                     if tags_insert_indices[elem_index] == text_len:
@@ -780,6 +776,8 @@ for path2file in files:
             print("ELEMS")
             for elem in elems:
                 print(elem)
+            fatal_error = True
+
 
 
 
