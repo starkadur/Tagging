@@ -415,7 +415,7 @@ if args.input.find("ParlaMint")>-1 or args.input.find("Parla")>-1:
 else:
     seg_name = "p"
 
-print(seg_name)
+
 if not args.input.endswith("/"):
     args.input = "{}/".format(args.input)
 if not args.output.endswith("/"):
@@ -692,7 +692,6 @@ for path2file in files:
             item_nr = 1
             #ítra yfir hvert tóka setningar
             for item in sent:
-                print(item)
 
                 right_join=True
                 token_len = len(item[0])
