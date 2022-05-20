@@ -6,23 +6,14 @@ from lxml import etree
 from lxml.etree import Element as ET
 import os
 import sys
-import psycopg2
-from psycopg2 import extras
-import dbconfig as config
 import tokenizer
 import re
 import pos
 from os.path import join, dirname, isdir, isfile
-import codecs
 import json
 import logging
 import time
-from collections import Counter
 import argparse
-import base64
-import string
-import random
-import shutil
 import torch
 from copy import deepcopy
 from datetime import datetime
