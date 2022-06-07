@@ -514,12 +514,12 @@ for path2file in files:
         os.makedirs(splt[0])
 
 
-    #if os.path.exists(filename_ana):
-    #    continue
+    if os.path.exists(filename_ana):
+        continue
 
     #if filename_ana != '/media/starkadur/NewVolume/risamalheild2020/samfelagsmidlar/TEI/IGC-Social-21.10.ana/Twitter/2008/IGC-Social3_2008_04.ana.xml':
     #    continue
-    print(filename_ana)
+    #print(filename_ana)
     #else:
     #    unfinished.append(filename_ana)
     #continue
@@ -566,9 +566,9 @@ for path2file in files:
     segs = text.findall(".//tei:{}".format(seg_name), ns)
 
     cnt_seg = len(segs)
-    start_time = time.perf_counter()
+    #start_time = time.perf_counter()
 
-    print("fjöldi seg: {}".format(cnt_seg))
+    #print("fjöldi seg: {}".format(cnt_seg))
     for seg in segs:
 
         #cnt_seg-=1
@@ -781,10 +781,10 @@ for path2file in files:
 
         seg = arrange(seg)
 
-    end_time = time.perf_counter()
-    time_total = end_time- start_time
-    per_seg = time_total/float(cnt_seg)
-    print(f"Tók {time_total:0.2f} sekúndur, {per_seg:0.4} per segment")
+    #end_time = time.perf_counter()
+    #time_total = end_time- start_time
+    #per_seg = time_total/float(cnt_seg)
+    #print(f"Tók {time_total:0.2f} sekúndur, {per_seg:0.4} per segment")
 
     if fatal_error:
         print("Skjal ekki skráð")
@@ -815,7 +815,7 @@ for path2file in files:
         et.write(path2file, pretty_print=True,encoding="UTF-8",xml_declaration=True)
 
 
-exit()
+
 print("FATAL ERRORS: {}".format(cnt_fatal_errors))
 print("################################################")
 if len(unfinished)>0:
@@ -825,4 +825,4 @@ if len(unfinished)>0:
             print(item)
             f.write("{}\n".format(item))
 
-#print(len(unfinished))
+print(len(unfinished))

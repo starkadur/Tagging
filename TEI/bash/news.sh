@@ -12,23 +12,23 @@ else
   echo $LICENCE
   exit
 fi
-NOTA=('ras1' 'ras2' 'ras1_og_2' 'stod2' 'bylgjan' 'sjonvarpid' '433' 'vf_kylfingur' 'bleikt')
-CONFIGFILE='/home/starkadur/PycharmProjects/TEI/frettir/config/main_ana_news.json'
-FOLDER='/media/starkadur/NewVolume/risamalheild2020/frettir/'${LICENCE}'/IGC-News'${nr}'-21.05.TEI/'
+#NOTA=('ras1' 'ras2' 'ras1_og_2' 'stod2' 'bylgjan' 'sjonvarpid' '433' 'vf_kylfingur' 'bleikt')
+CONFIGFILE='/home/starkadur/config/main_ana_news.json'
+FOLDER='/mnt/gagnageymsla/starkadur/IGC-22/frettir/'${LICENCE}'/IGC-News'${nr}'-22.10.TEI/'
 
 for path in ${FOLDER}*;do
   midill="${path##*/}"
 
 
-  if [[ " ${NOTA[@]} " =~ " ${midill} " ]]; then
+  #if [[ " ${NOTA[@]} " =~ " ${midill} " ]]; then
 
     id=${midill/_/}
 
     echo "###### "${midill}" ####"
-    input="/media/starkadur/NewVolume/risamalheild2020/frettir/"${LICENCE}"/IGC-News"${nr}"-21.05.TEI/"${midill}"/"
-    output="/media/starkadur/NewVolume/risamalheild2020/frettir/"${LICENCE}"/IGC-News"${nr}"-21.05.ana/"${midill}"/"
-    teicorpus="/media/starkadur/NewVolume/risamalheild2020/frettir/"${LICENCE}"/IGC-News"${nr}"-21.05.TEI/"${midill}"/IGC-News"${nr}"-"${id}"-21.05.xml"
+    input="/mnt/gagnageymsla/starkadur/IGC-22/frettir/"${LICENCE}"/IGC-News"${nr}"-22.10.TEI/"${midill}"/"
+    output="/mnt/gagnageymsla/starkadur/IGC-22/frettir/"${LICENCE}"/IGC-News"${nr}"-22.10.ana/"${midill}"/"
+    teicorpus="/mnt/gagnageymsla/starkadur/IGC-22/frettir/"${LICENCE}"/IGC-News"${nr}"-22.10.TEI/"${midill}"/IGC-News"${nr}"-"${id}"-22.10.xml"
 
-    python3 ../tok_tag_lem.py --input ${input} --output ${output} --configfile ${CONFIGFILE} --teiCorpus ${teicorpus} --reverse 1
-  fi;
+    python3 tok_tag_lem.py --input ${input} --output ${output} --configfile ${CONFIGFILE} --teiCorpus ${teicorpus} --reverse 1
+  #fi;
 done;
