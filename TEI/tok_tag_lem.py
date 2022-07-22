@@ -340,12 +340,41 @@ def clean_text(text):
     text = text.replace(u"\ue034","")
 
     text = text.replace(u"\ue079","")
-
-
-
-
-
-
+    text = text.replace(u"\x8e","Ž")
+    text = text.replace(u"\x99", "") #TM
+    text = text.replace(u"\x88", "^")
+    text = text.replace(u"\x9e", "ž")
+    text = text.replace(u"\u206e", "")
+    text = text.replace(u"\u0FE335", "")
+    text = text.replace(u"\u000e0067", "")
+    text = text.replace(u"\u000e0062", "")
+    text = text.replace(u"\u000e0073", "")
+    text = text.replace(u"\u000e0063", "")
+    text = text.replace(u"\u000e0074", "")
+    text = text.replace(u"\uf0de", "")
+    text = text.replace(u"\u000e007f", "")
+    text = text.replace(u"\uf078", "")
+    text = text.replace(u"\uf02c", "")
+    text = text.replace(u"\uf06f", "")
+    text = text.replace(u"\uf035", "")
+    text = text.replace(u"\uf06f", "")
+    text = text.replace(u"\uf02c", "")
+    text = text.replace(u"\uf024", "")
+    text = text.replace(u"\uf078", "")
+    text = text.replace(u"\uf050", "")
+    text = text.replace(u"\ue74d", "")
+    text = text.replace(u"\uf020", "")
+    text = text.replace(u"\uf0ff", "")
+    text = text.replace(u"\x83", "")
+    text = text.replace(u"\uea0b", "")
+    text = text.replace(u"\uf095", "")
+    text = text.replace(u"\uf04d", "")
+    text = text.replace(u"\uf08e", "")    
+    text = text.replace(u"\x96", "")
+    text = text.replace(u"\x89", "‰")
+    text = text.replace(u"\x84", "")
+    text = text.replace(u"\x97", "")
+    text = text.replace(u"\x93", "")
 
 
     #taka strip af ef um er að ræðpath2textsa texta sem inniheldur innskot eins og vocal, note ...
@@ -369,7 +398,7 @@ def update_extent(_root, w_cnt):
 def get_files():
 
     data = []
-
+    print(teiCorpus)
     tree_ = etree.parse(teiCorpus, parser)
     root_ = tree_.getroot()
     for include in root_.findall("{http://www.w3.org/2001/XInclude}include"):
@@ -405,6 +434,7 @@ arg_parser.add_argument("--skip_cleaning", default=0, help="Default is 0. Set to
 args = arg_parser.parse_args()
 
 teiCorpus = args.teiCorpus
+print(teiCorpus)
 
 tmp = teiCorpus.rsplit("/",1)[1].replace(".xml",".txt")
 errorlogfile = "errors_{}".format(tmp)
@@ -439,6 +469,9 @@ resp_stmt = [
     }
 ]
 
+handle_map = {
+	'http://hdl.handle.net/20.500.12537/240' : 'http://hdl.handle.net/20.500.12537/241'
+}
 #sækja skjöl
 path2tei = args.input
 path2tei_ana = args.output
@@ -491,7 +524,7 @@ for path2file in files:
 
 
     cnt+=1
-    if cnt%1000==0:
+    if cnt%100000==0:
         print(cnt)
     fatal_error = False
 
@@ -516,6 +549,7 @@ for path2file in files:
 
     if os.path.exists(filename_ana):
         continue
+    print(filename_ana)
 
     #if filename_ana != '/media/starkadur/NewVolume/risamalheild2020/samfelagsmidlar/TEI/IGC-Social-21.10.ana/Twitter/2008/IGC-Social3_2008_04.ana.xml':
     #    continue
@@ -533,10 +567,14 @@ for path2file in files:
     tagUsage2 = {'note':0,'vocal':0, 'incident':0, 'kinesic':0}
 
     #opna xml-skjal og setja í rót
-
-    tree = etree.parse(path2file, parser)
-    root_tei = tree.getroot()
-    root = deepcopy(root_tei)
+    try:
+      tree = etree.parse(path2file, parser)
+      root_tei = tree.getroot()
+      root = deepcopy(root_tei)
+    except:
+       print("Parsing-villa")
+       print(path2file)
+       continue
 
     #breyta xml:id í rót
     root.attrib['{http://www.w3.org/XML/1998/namespace}id'] = root.attrib['{http://www.w3.org/XML/1998/namespace}id']+".ana"
@@ -555,6 +593,13 @@ for path2file in files:
         print("Titill fannst ekki")
         exit()
 
+    #breyta idno 
+    publicationStmt = root.find(".//tei:publicationStmt", ns)
+    idno = publicationStmt.find(".//tei:idno", ns) 
+    if idno is not None:
+       handle = idno.text
+       new_handle = handle_map[handle]
+    
     #bæta við verkefnum (respStmt)
     add_resp_stmt(config['respStmt'])
 
@@ -670,9 +715,14 @@ for path2file in files:
                 print(sentence)
                 fatal_error = True
                 continue
-
-
-        lemmas = lemmatize_bulk(bulk, tags)
+        except:
+            print("Villa við mörkun")
+            fatal_error = True 
+            continue
+        try:
+           lemmas = lemmatize_bulk(bulk, tags)
+        except:
+           print("Villa við lemmun")
 
         data = join_token_tag_lemma(bulk, tags, lemmas)
 
@@ -807,8 +857,12 @@ for path2file in files:
         root = update_extent(root,count_w)
 
     et = etree.ElementTree(root)
-
-    et.write(filename_ana, pretty_print=True,encoding="UTF-8",xml_declaration=True)
+    try:
+      et.write(filename_ana, pretty_print=True,encoding="UTF-8",xml_declaration=True)
+    except lxml.etree.SerialisationError:
+       print("VILLA við skráningu")
+       print(path2file)
+       continue
 
     if args.update_extent==1:
         et = etree.ElementTree(root_tei)
