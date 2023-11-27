@@ -375,6 +375,20 @@ def clean_text(text):
     text = text.replace(u"\x84", "")
     text = text.replace(u"\x97", "")
     text = text.replace(u"\x93", "")
+    text = text.replace(u"\ue415", "")
+    text = text.replace(u"\uefa0","")
+    text = text.replace(u"\uf21c","")
+    text = text.replace(u"\ue7d3","")
+    text = text.replace(u"\ue18f","")
+    text = text.replace(u"\ue7d3","")
+    text = text.replace(u"\uefff","")
+    text = text.replace(u"\uf207","")
+    text = text.replace(u"\ue499","")
+    text = text.replace(u"\ueeff","")
+    text = text.replace(u"\ue023","")
+    text = text.replace(u"\x94", '”')
+    text = text.replace(u"\x95", '')
+    text = text.replace(u"\x92", '’')
 
 
     #taka strip af ef um er að ræðpath2textsa texta sem inniheldur innskot eins og vocal, note ...
@@ -396,15 +410,21 @@ def update_extent(_root, w_cnt):
     return _root
 
 def get_files():
-
     data = []
-    print(teiCorpus)
-    tree_ = etree.parse(teiCorpus, parser)
-    root_ = tree_.getroot()
-    for include in root_.findall("{http://www.w3.org/2001/XInclude}include"):
-
-        data.append(join(args.input,include.attrib['href']))
-
+    #ekki er unnið út frá rótarskjali heldur slóð á möppu
+    if args.path2folder is not None:
+        
+        data  = [join(path2tei,f) for f in listdir(path2tei) if isfile(join(path2tei, f))]
+        
+    else:
+    
+       print(teiCorpus)
+       tree_ = etree.parse(teiCorpus, parser)
+       root_ = tree_.getroot()
+       for include in root_.findall("{http://www.w3.org/2001/XInclude}include"):
+          data.append(join(args.input,include.attrib['href']))
+    
+  
     return data
 
 def xml_unescape(txt):
@@ -421,35 +441,48 @@ def afhreinsa_texta(texti):
     return textipath2texts
 
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("--input", help="path to folder containing input files (TEI-files with untagged texts.)")
-arg_parser.add_argument("--output", help="path to output files (TEI-files with tagged texts.)")
+arg_parser.add_argument("--input", default=None, help="path to folder containing input files (TEI-files with untagged texts.)")
+arg_parser.add_argument("--output", default=None, help="path to output files (TEI-files with tagged texts.)")
 arg_parser.add_argument("--reverse", type=int, default=0, help="If 1 then the files are iterated in reverse order. Userful if you want to run the script simultaneously.")
-arg_parser.add_argument("--teiCorpus", help="path to the file containing teiCorpus.")
+arg_parser.add_argument("--teiCorpus",default=None,  help="path to the file containing teiCorpus.")
 arg_parser.add_argument("--configfile", help="Path to config file")
 arg_parser.add_argument("--update_extent", default=0, help="Default is 0. Set to 1 if extent (word count) should be updated in original file")
 arg_parser.add_argument("--skip_unicode_error", default=0, help="Default is 0. Set to 1 if you want the script to ignore segments with unicode error instaed of aborting the whole wile to do i later.")
 arg_parser.add_argument("--skip_cleaning", default=0, help="Default is 0. Set to 1 if you want the script to skip cleaning the text of unicode symbols that the tagger can't handle.")
-
+arg_parser.add_argument("--path2folder", default=None,  help="Path to folder in witch everything should be annotated. The script will create a new folder containing the annotated file")
+arg_parser.add_argument("--seg", default=None, help="Hvort er notað p eða seg. Default er seg. Skriftan setur sjálfkrafa p, nema ef corpus er Parla ")
 
 args = arg_parser.parse_args()
+exit()
+#ef aðeins er verið að marka skjöl í möppu, án þess að tilgreina teiCorpus
+if args.path2folder is not None:
+   path2tei = args.path2folder
+   path2tei_ana = join(path2tei, "ana")
+#annars ...
+else:
+   path2tei = args.input
+   path2tei_ana = args.output
+   if not args.input.endswith("/"):
+     args.input = "{}/".format(args.input)
+   if not args.output.endswith("/"):
+     args.output = "{}/".format(args.output)
+
 
 teiCorpus = args.teiCorpus
-print(teiCorpus)
+print("teiCorpus: {}".format(teiCorpus))
 
-tmp = teiCorpus.rsplit("/",1)[1].replace(".xml",".txt")
+if teiCorpus is not None:
+   tmp = teiCorpus.rsplit("/",1)[1].replace(".xml",".txt")
+else:
+   tmp = "None"
 errorlogfile = "errors_{}".format(tmp)
 
-
-if args.input.find("ParlaMint")>-1 or args.input.find("Parla")>-1:
+if args.seg is not None:
+    seg_name = args.seg
+elif path2tei.find("ParlaMint")>-1 or path2tei.find("Parla")>-1:
     seg_name = "seg"
 else:
     seg_name = "p"
-
-
-if not args.input.endswith("/"):
-    args.input = "{}/".format(args.input)
-if not args.output.endswith("/"):
-    args.output = "{}/".format(args.output)
 
 if not args.configfile:
     print("Þú verður að senda inn stikann --configfile með slóð á config-skrá.")
@@ -470,12 +503,16 @@ resp_stmt = [
 ]
 
 handle_map = {
-	'http://hdl.handle.net/20.500.12537/240' : 'http://hdl.handle.net/20.500.12537/241'
+	'http://hdl.handle.net/20.500.12537/240' : 'http://hdl.handle.net/20.500.12537/241',
+        'http://hdl.handle.net/20.500.12537/242' : 'http://hdl.handle.net/20.500.12537/243',
+        'http://hdl.handle.net/20.500.12537/208' : 'http://hdl.handle.net/20.500.12537/208',
+        'http://hdl.handle.net/20.500.12537/245' : 'http://hdl.handle.net/20.500.12537/246',
+        'http://hdl.handle.net/20.500.12537/247' : 'http://hdl.handle.net/20.500.12537/248',
+        'http://hdl.handle.net/20.500.12537/249' : 'http://hdl.handle.net/20.500.12537/250',
+        'http://hdl.handle.net/20.500.12537/251' : 'http://hdl.handle.net/20.500.12537/252'
+
 }
 #sækja skjöl
-path2tei = args.input
-path2tei_ana = args.output
-
 parser = etree.XMLParser(remove_blank_text=True)
 
 files = get_files()
@@ -487,7 +524,7 @@ with open(args.configfile) as f:
 
 
 # Initialize the tagger
-device = torch.device("cpu")  # CPU
+device = torch.device("cuda")  # CPU
 tagger: pos.Tagger = torch.hub.load(
     repo_or_dir="cadia-lvl/POS",
     model="tag_large", # This specifies which model to use. Set to 'tag_large' for large model.
@@ -527,10 +564,11 @@ for path2file in files:
     if cnt%100000==0:
         print(cnt)
     fatal_error = False
-
+    
     file = path2file.rsplit("/",1)[1]
-
-    filename_ana = path2file.replace(args.input, args.output)
+    
+    #filename_ana = path2file.replace(args.input, args.output)
+    filename_ana = path2file.replace(path2tei, path2tei_ana)
 
     if filename_ana == path2file:
         print("slóð á .ana er sama og á TEI")
@@ -549,7 +587,7 @@ for path2file in files:
 
     if os.path.exists(filename_ana):
         continue
-    print(filename_ana)
+    
 
     #if filename_ana != '/media/starkadur/NewVolume/risamalheild2020/samfelagsmidlar/TEI/IGC-Social-21.10.ana/Twitter/2008/IGC-Social3_2008_04.ana.xml':
     #    continue
@@ -596,9 +634,15 @@ for path2file in files:
     #breyta idno 
     publicationStmt = root.find(".//tei:publicationStmt", ns)
     idno = publicationStmt.find(".//tei:idno", ns) 
-    if idno is not None:
+    if idno is not None and idno.text is not None:
+      
        handle = idno.text
        new_handle = handle_map[handle]
+       idno.text = new_handle
+    else:
+     print("vantar handle í handle_map")
+     print(idno.text)
+     exit()
     
     #bæta við verkefnum (respStmt)
     add_resp_stmt(config['respStmt'])
@@ -607,7 +651,7 @@ for path2file in files:
     #for u in root.findall(".//tei:u", ns):
     #    #ítra yfir <seg>
     text = root.find(".//tei:text", ns)
-
+    
     segs = text.findall(".//tei:{}".format(seg_name), ns)
 
     cnt_seg = len(segs)
@@ -717,7 +761,10 @@ for path2file in files:
                 continue
         except:
             print("Villa við mörkun")
+            print(text_tokenized)
+            print(seg.attrib)
             fatal_error = True 
+           
             continue
         try:
            lemmas = lemmatize_bulk(bulk, tags)
@@ -830,6 +877,8 @@ for path2file in files:
 
 
         seg = arrange(seg)
+        if fatal_error:
+           break
 
     #end_time = time.perf_counter()
     #time_total = end_time- start_time
